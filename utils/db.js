@@ -69,6 +69,27 @@ class DBClient {
     const user = await usersCollection.findOne({ _id: userId });
     return user;
   }
+
+  async connect() {
+    try {
+      await this.client.connect();
+      console.log('Connected to MongoDB');
+      this.db = this.client.db(this.dbName);
+    } catch (error) {
+      console.error('Error connecting to MongoDB:', error);
+      throw error;
+    }
+  }
+
+  async createFile(fileObj) {
+    try {
+      const result = await this.db.collection('files').insertOne(fileObj);
+      return result.ops[0];
+    } catch (error) {
+      console.error('Error creating file in DB:', error);
+      throw error;
+    }
+  }
 }
 
 const dbClient = new DBClient();
