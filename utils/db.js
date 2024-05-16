@@ -66,7 +66,7 @@ class DBClient {
   async getUserById(userId) {
     const db = this.client.db();
     const usersCollection = db.collection('users');
-    const user = await usersCollection.findOne({ _id: userId });
+    const user = await usersCollection.findOne({ _id: ObjectId(userId) });
     return user;
   }
 
@@ -113,6 +113,19 @@ class DBClient {
 
     const files = await fileCollection.find(query).skip(skip).limit(limit).toArray();
     return files;
+  }
+
+  async updateFile(fileId, updateData) {
+    try {
+      const result = await this.db.collection('files').updateOne(
+        { _id: ObjectId(fileId) },
+        { $set: updateData },
+      );
+      return result.modifiedCount > 0;
+    } catch (error) {
+      console.error('Error updating file in DB:', error);
+      throw error;
+    }
   }
 }
 
