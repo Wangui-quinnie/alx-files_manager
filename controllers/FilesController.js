@@ -78,7 +78,7 @@ exports.postUpload = async function postUpload(req, res) {
   }
 };
 
-exports.getShow = async function getShow(req, res) {
+exports.getShow = async (req, res) => {
   const token = req.get('X-token');
   const key = `auth_${token}`;
   const userId = await redisClient.get(key);
@@ -99,7 +99,7 @@ exports.getShow = async function getShow(req, res) {
   res.json(file);
 };
 
-exports.getIndex = async function getIndex(req, res) {
+exports.getIndex = async (req, res) => {
   const token = req.get('X-token');
   const key = `auth_${token}`;
   const userId = await redisClient.get(key);

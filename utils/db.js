@@ -1,5 +1,5 @@
 // utils/db.js
-const { MongoClient } = require('mongodb');
+const { MongoClient, ObjectId } = require('mongodb');
 
 class DBClient {
   constructor() {
@@ -89,6 +89,30 @@ class DBClient {
       console.error('Error creating file in DB:', error);
       throw error;
     }
+  }
+
+  async getFileById(fileId) {
+    const fileCollection = this.db.collection('files');
+    const file = await fileCollection.findOne({ _id: new ObjectId(fileId) });
+    return file;
+  }
+
+  // Method to get all files by user ID and parent ID with pagination
+  async getFilesByUserIdAndParentId(userId, parentId, page = 0) {
+    const limit = 20; // Number of items per page
+    const skip = page * limit; // Calculate the number of documents to skip based on the page
+
+    const fileCollection = this.db.collection('files');
+    const query = { userId: new ObjectId(userId) };
+
+    if (parentId) {
+      query.parentId = new ObjectId(parentId);
+    } else {
+      query.parentId = null; // Handle root folder where parentId is null
+    }
+
+    const files = await fileCollection.find(query).skip(skip).limit(limit).toArray();
+    return files;
   }
 }
 
